@@ -1,36 +1,34 @@
-#include <vector>
-#include <stack>
-#include <unordered_map>
-
 class Solution {
 public:
-    std::vector<int> nextGreaterElement(std::vector<int>& nums1, std::vector<int>& nums2) {
-        std::stack<int> st;
-        std::unordered_map<int, int> next_greater;
-
-        // Traverse nums2 from right to left
-        for (int j = nums2.size() - 1; j >= 0; j--) {
-            int current = nums2[j];
-
-            // 1. Pop smaller or equal elements
-            while (!st.empty() && st.top() <= current) {
+    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        stack<int> st;
+        int n1 = nums1.size();
+        int n2 = nums2.size();
+        vector<int> vec(n2, -1);
+        int j = n2 - 1;
+        while (j >= 0) {
+            while (!st.empty() && st.top() <= nums2[j]) {
                 st.pop();
             }
 
-            // 2. Map current number to its next greater element
-            next_greater[current] = st.empty() ? -1 : st.top();
-
-            // 3. Push current element onto the stack
-            st.push(current);
+            if (st.empty()) {
+                vec[j] = -1;
+                st.push(nums2[j]);
+                j--;
+            } else if (st.top() > nums2[j]) {
+                vec[j] = st.top();
+                st.push(nums2[j]);
+                j--;
+            }
         }
-
-        // Build the answer vector for nums1 in O(1) per element
-        std::vector<int> ans;
-        ans.reserve(nums1.size());
-        for (int num : nums1) {
-            ans.push_back(next_greater[num]);
+        vector<int> vect(n1, -1);
+        for(int j=0; j<n2; j++){
+            for(int i=0; i<n1; i++){
+                if(nums1[i] == nums2[j]){
+                    vect[i] = vec[j];
+                }
+            }
         }
-
-        return ans;
+        return vect;
     }
 };
